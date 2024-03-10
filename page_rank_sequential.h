@@ -1,5 +1,5 @@
-#ifndef LEARN_ASSIGNMENT1_PAGE_RANK_H
-#define LEARN_ASSIGNMENT1_PAGE_RANK_H
+#ifndef LEARN_ASSIGNMENT1_PAGE_RANK_SEQUENTIAL_H
+#define LEARN_ASSIGNMENT1_PAGE_RANK_SEQUENTIAL_H
 
 #include <iostream>
 #include <vector>
@@ -9,13 +9,13 @@
 
 using namespace std;
 
-class page_rank {
+class page_rank_sequential {
     const string &filename;
     vector<vector<int>> matrix;
     auto interleave(u_int16_t x, u_int16_t y) const;
     void parse_dataset();
 public:
-    explicit page_rank(const string &filename);
+    explicit page_rank_sequential(const string &filename);
 };
 
-#endif //LEARN_ASSIGNMENT1_PAGE_RANK_H
+#endif //LEARN_ASSIGNMENT1_PAGE_RANK_SEQUENTIAL_H

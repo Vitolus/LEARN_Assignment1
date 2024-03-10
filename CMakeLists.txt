@@ -4,5 +4,5 @@ project(LEARN_Assignment1)
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(LEARN_Assignment1 main.cpp
-        page_rank.cpp
-        page_rank.h)
+        page_rank_sequential.cpp
+        page_rank_sequential.h)

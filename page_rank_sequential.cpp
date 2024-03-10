@@ -1,6 +1,6 @@
-#include "page_rank.h"
+#include "page_rank_sequential.h"
 
-auto page_rank::interleave(u_int16_t x, u_int16_t y) const {
+auto page_rank_sequential::interleave(u_int16_t x, u_int16_t y) const {
     static const u_int16_t M[] = {0x5555, 0x3333, 0x0F0F, 0x00FF};
     static const u_int16_t S[] = {1, 2, 4, 8};
     x = (x | (x << S[3])) & M[3];
@@ -15,11 +15,26 @@ auto page_rank::interleave(u_int16_t x, u_int16_t y) const {
     return result;
 }
 
-void page_rank::parse_dataset() {
-
+void page_rank_sequential::parse_dataset() {
+    ifstream file(filename);
+    if(!file.is_open()){
+        cout << "file not found" << endl;
+        return;
+    }
+    string line;
+    for (int i = 0; i < 4; ++i) {
+        getline(file, line); // skip header
+    }
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        int row, col;
+        iss >> col >> row;
+        matrix[row][col] = 1;
+    }
+    file.close();
 }
 
-page_rank::page_rank(const string &filename) : filename(filename){
+page_rank_sequential::page_rank_sequential(const string &filename) : filename(filename){
     ifstream file(filename);
     if(!file.is_open()){
         cout << "file not found" << endl;

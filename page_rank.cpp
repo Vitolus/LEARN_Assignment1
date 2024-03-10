@@ -21,25 +21,25 @@ void page_rank::parse_dataset() {
 
 page_rank::page_rank(const string &filename) : filename(filename){
     ifstream file(filename);
-    if(file.is_open()){
-        string line;
-        for (int i = 0; i < 2; ++i) {
-            getline(file, line); // skip first two lines
-        }
-        getline(file, line); // line with number of nodes and edges
-        istringstream iss(line);
-        string n_nodes;
-        while(iss >> n_nodes){
-            if(n_nodes == "Nodes:"){
-                iss >> n_nodes;
-                break;
-            }
-        }
-        file.close();
-        matrix.resize(stoi(n_nodes), vector<int>(stoi(n_nodes), 0));
-    }else{
+    if(!file.is_open()){
         cout << "file not found" << endl;
+        return;
     }
+    string line;
+    for (int i = 0; i < 2; ++i) {
+        getline(file, line); // skip first two lines
+    }
+    getline(file, line); // line with number of nodes and edges
+    istringstream iss(line);
+    string n_nodes;
+    while(iss >> n_nodes){
+        if(n_nodes == "Nodes:"){
+            iss >> n_nodes;
+            break;
+        }
+    }
+    file.close();
+    matrix.resize(stoi(n_nodes), vector<int>(stoi(n_nodes), 0));
 }
 
 

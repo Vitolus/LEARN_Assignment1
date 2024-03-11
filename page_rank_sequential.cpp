@@ -1,6 +1,31 @@
 #include "page_rank_sequential.h"
 
-auto page_rank_sequential::interleave(u_int16_t x, u_int16_t y) const {
+page_rank_sequential::page_rank_sequential(const string &filename) : filename(filename){
+    ifstream file(filename);
+    if(!file.is_open()){
+        cout << "file not found" << endl;
+        return;
+    }
+    string line;
+    for (int i = 0; i < 2; ++i) {
+        getline(file, line); // skip first two lines
+    }
+    getline(file, line); // line with number of nodes and edges
+    istringstream iss(line);
+    string n_nodes;
+    while(iss >> n_nodes){
+        if(n_nodes == "Nodes:"){
+            iss >> n_nodes;
+            break;
+        }
+    }
+    file.close();
+    uint dim = stoi(n_nodes);
+    matrix.resize(dim, vector<int>(dim, 0));
+    z_order.resize(dim*dim, 0);
+}
+
+auto page_rank_sequential::interleave(u_int16_t x, u_int16_t y) {
     static const u_int16_t M[] = {0x5555, 0x3333, 0x0F0F, 0x00FF};
     static const u_int16_t S[] = {1, 2, 4, 8};
     x = (x | (x << S[3])) & M[3];
@@ -30,31 +55,7 @@ void page_rank_sequential::parse_dataset() {
         int row, col;
         iss >> col >> row;
         matrix[row][col] = 1;
+        z_order[interleave(row, col)] = 1;
     }
     file.close();
 }
-
-page_rank_sequential::page_rank_sequential(const string &filename) : filename(filename){
-    ifstream file(filename);
-    if(!file.is_open()){
-        cout << "file not found" << endl;
-        return;
-    }
-    string line;
-    for (int i = 0; i < 2; ++i) {
-        getline(file, line); // skip first two lines
-    }
-    getline(file, line); // line with number of nodes and edges
-    istringstream iss(line);
-    string n_nodes;
-    while(iss >> n_nodes){
-        if(n_nodes == "Nodes:"){
-            iss >> n_nodes;
-            break;
-        }
-    }
-    file.close();
-    matrix.resize(stoi(n_nodes), vector<int>(stoi(n_nodes), 0));
-}
-
-

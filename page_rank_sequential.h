@@ -9,13 +9,15 @@
 
 using namespace std;
 
-class page_rank_sequential {
+class page_rank_sequential{
     const string &filename;
-    vector<vector<int>> matrix;
-    vector<int> z_order;
-    static auto interleave(u_int16_t x, u_int16_t y) ;
+    vector<vector<float>> graph, contributions;
+    vector<float> z_order, rank;
+    static auto interleave(u_int16_t x, u_int16_t y);
+	float out_degree(int row);
 public:
     explicit page_rank_sequential(const string &filename);
+	vector<float> compute_page_rank();
 };
 
 #endif //LEARN_ASSIGNMENT1_PAGE_RANK_SEQUENTIAL_H

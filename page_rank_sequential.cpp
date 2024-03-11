@@ -15,6 +15,16 @@ auto page_rank_sequential::interleave(u_int16_t x, u_int16_t y){
 	return result;
 }
 
+float page_rank_sequential::out_degree(int row){
+	float degree = 0;
+	for(auto &col : graph[row]){
+		if(col != 0){
+			++degree;
+		}
+	}
+	return degree;
+}
+
 page_rank_sequential::page_rank_sequential(const string &filename) : filename(filename){
 	ifstream file(filename);
 	if(!file.is_open()){

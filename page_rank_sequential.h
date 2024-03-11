@@ -14,7 +14,6 @@ class page_rank_sequential {
     vector<vector<int>> matrix;
     vector<int> z_order;
     static auto interleave(u_int16_t x, u_int16_t y) ;
-    void parse_dataset();
 public:
     explicit page_rank_sequential(const string &filename);
 };

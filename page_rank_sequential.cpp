@@ -39,7 +39,7 @@ page_rank_sequential::page_rank_sequential(const string &filename) : filename(fi
 	matrix.resize(dim, vector<int>(dim, 0));
 	z_order.resize(dim * dim, 0);
 	while(getline(file, line)){
-		istringstream iss(line);
+		iss.str(line);
 		int row, col;
 		iss >> col >> row;
 		matrix[row][col] = 1;

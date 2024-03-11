@@ -32,7 +32,7 @@ page_rank_sequential::page_rank_sequential(const string &filename) : filename(fi
 		return;
 	}
 	string line;
-	for(int i = 0; i < 2; ++i){
+	for(short i = 0; i < 2; ++i){
 		getline(file, line); // skip first two lines
 	}
 	getline(file, line); // line with number of nodes and edges
@@ -46,14 +46,27 @@ page_rank_sequential::page_rank_sequential(const string &filename) : filename(fi
 	}
 	getline(file, line); // skip last header line
 	uint dim = stoi(n_nodes);
-	matrix.resize(dim, vector<int>(dim, 0));
-	z_order.resize(dim * dim, 0);
+	graph.resize(dim, vector<float>(dim, 0.0));
 	while(getline(file, line)){
 		iss.str(line);
 		int row, col;
-		iss >> col >> row;
-		matrix[row][col] = 1;
-		z_order[interleave(row, col)] = 1;
+		iss >> row >> col;
+		graph[row][col] = 1;
 	}
 	file.close();
+	contributions.resize(dim, vector<float>(dim, 0.0));
+	z_order.resize(dim * dim, 0.0);
+	rank.resize(dim, 1.0/dim);
+	for(int i = 0; i < dim; ++i){
+		for(int j = 0; j < dim; ++j){
+			float oj = out_degree(j);
+			if(graph[j][i] == 1){
+				contributions[i][j] = 1.0/oj;
+				z_order[interleave(i, j)] = 1.0/oj;
+			}else if(oj == 0){
+				contributions[i][j] = 1.0/dim;
+				z_order[interleave(i, j)] = 1.0/dim;
+			}
+		}
+	}
 }

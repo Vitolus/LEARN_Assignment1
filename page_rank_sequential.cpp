@@ -26,7 +26,7 @@ float page_rank_sequential::out_degree(int row){
 }
 
 page_rank_sequential::page_rank_sequential(const string &filename) : filename(filename){
-	ifstream file(filename);
+	ifstream file(this->filename);
 	if(!file.is_open()){
 		cout << "file not found" << endl;
 		return;
@@ -69,4 +69,18 @@ page_rank_sequential::page_rank_sequential(const string &filename) : filename(fi
 			}
 		}
 	}
+}
+
+vector<float> page_rank_sequential::compute_page_rank(float beta){
+	uint dim = rank.size();
+	vector<float> results(dim, 0.0);
+	float c = (1.0 - beta) / dim;
+	for(int i = 0; i < dim; ++i){
+		for(int j = 0; j < dim; ++j){
+			results[i] += beta * z_order[interleave(i, j)] * rank[j];
+		}
+		results[i] += c;
+	}
+	rank = results;
+	return rank;
 }

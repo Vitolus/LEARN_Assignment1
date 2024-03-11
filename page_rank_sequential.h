@@ -13,11 +13,11 @@ class page_rank_sequential{
     const string &filename;
     vector<vector<float>> graph, contributions;
     vector<float> z_order, rank;
-    static auto interleave(u_int16_t x, u_int16_t y);
-	float out_degree(int row);
+    static auto interleave(u_int16_t, u_int16_t);
+	float out_degree(int);
 public:
-    explicit page_rank_sequential(const string &filename);
-	vector<float> compute_page_rank();
+    explicit page_rank_sequential(const string &);
+	vector<float> compute_page_rank(float);
 };
 
 #endif //LEARN_ASSIGNMENT1_PAGE_RANK_SEQUENTIAL_H

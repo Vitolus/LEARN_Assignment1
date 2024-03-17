@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include "page_rank.h"
 
 using namespace std;
 
@@ -45,6 +46,8 @@ vector<double> compute_page_rank(int iter, double beta, int dim, vector<double>&
 
 
 int main() {
+	page_rank pr("../datasets/p2p-Gnutella25.txt");
+	/*
 	// Create an adjacency matrix
 	vector<vector<double>> M = {
 			{0, 0, 0, 0},
@@ -95,5 +98,6 @@ int main() {
 	for(auto &i : z_order){
 		cout << i << " ";
 	}
+	 */
 	return 0;
 }

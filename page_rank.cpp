@@ -55,7 +55,7 @@ page_rank::page_rank(const string &filename) : filename(filename){
 		graph[arrive][start] = 1;
 	}
 	file.close();
-
+//TODO: take times
 	/// initialize z_order with 1/out_degree or 1/dim
 	this->z_order.resize(this->dim * this->dim, 0.0);
 	vector<double> oj(this->dim, 0.0);

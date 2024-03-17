@@ -1,6 +1,5 @@
 #include <vector>
 #include <iostream>
-#include <string>
 
 using namespace std;
 
@@ -27,6 +26,23 @@ uint64_t interleave(uint32_t x, uint32_t y) {
 	y = (y | (y << S[0])) & M[0];
 	return x | (y << 1);
 }
+
+
+vector<double> compute_page_rank(int iter, double beta, int dim, vector<double>& z_order, vector<double>& rank){
+	vector<double> results(dim, 0.0);
+	double c = (1.0 - beta) / dim;
+	for(int k = 0; k < iter ; ++k){
+		for(auto i = 0; i < dim; ++i){
+			for(auto j = 0; j < dim; ++j){
+				results[i] += beta * z_order[interleave(j, i)] * rank[j];
+			}
+			results[i] += c;
+		}
+		rank = results;
+	}
+	return rank;
+}
+
 
 int main() {
 	// Create an adjacency matrix
@@ -60,6 +76,12 @@ int main() {
 			}
 		}
 	}
+	vector<double> rank(M.size(), 1.0/M.size());
+	compute_page_rank(50, 0.85, M.size(), z_order, rank);
+	for(auto &i : rank){
+		cout << i << " ";
+	}
+	cout << endl;
 	for(auto &i : oj){
 		cout << i << " ";
 	}

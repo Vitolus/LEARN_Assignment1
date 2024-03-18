@@ -18,9 +18,9 @@ auto page_rank::interleave(u_int16_t col, u_int16_t row){
 //TODO: function broken give only [1][1] as result
 void page_rank::deinterleave(u_int32_t z, u_int16_t &col, u_int16_t &row) {
 	static const u_int16_t M[] = {0x5555, 0x3333, 0x0F0F, 0x00FF};
-	static const u_int16_t S[] = {0, 1, 2, 4};
-	col = z;
+	static const u_int16_t S[] = {1, 2, 4, 8};
 	row = z >> 1;
+	col = z;
 	col = (col | (col >> S[3])) & M[3];
 	col = (col | (col >> S[2])) & M[2];
 	col = (col | (col >> S[1])) & M[1];

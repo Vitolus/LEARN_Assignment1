@@ -17,6 +17,7 @@ class page_rank{
 	uint dim;
     static auto interleave(u_int16_t, u_int16_t);
 	static float out_degree(vector<vector<float>> &, int);
+	static void deinterleave(u_int32_t, u_int16_t &, u_int16_t &);
 public:
     explicit page_rank(const string &);
 	vector<float> compute_page_rank(int, float);

@@ -15,6 +15,22 @@ auto page_rank::interleave(u_int16_t col, u_int16_t row){
 	return result;
 }
 
+//TODO: function broken give only [1][1] as result
+void page_rank::deinterleave(u_int32_t z, u_int16_t &col, u_int16_t &row) {
+	static const u_int16_t M[] = {0x5555, 0x3333, 0x0F0F, 0x00FF};
+	static const u_int16_t S[] = {0, 1, 2, 4};
+	col = z;
+	row = z >> 1;
+	col = (col | (col >> S[3])) & M[3];
+	col = (col | (col >> S[2])) & M[2];
+	col = (col | (col >> S[1])) & M[1];
+	col = (col | (col >> S[0])) & M[0];
+	row = (row | (row >> S[3])) & M[3];
+	row = (row | (row >> S[2])) & M[2];
+	row = (row | (row >> S[1])) & M[1];
+	row = (row | (row >> S[0])) & M[0];
+}
+
 float page_rank::out_degree(vector<vector<float>> &graph, int col){
 	float degree = 0.0;
 	for(const auto &row : graph){
@@ -55,46 +71,75 @@ page_rank::page_rank(const string &filename) : filename(filename){
 		graph[arrive][start] = 1;
 	}
 	file.close();
-//TODO: fix z_order and substitute with matrix
 //TODO: take times
-	/// initialize z_order with 1/out_degree or 1/dim
 	cout << "start init" << endl;
-//	this->z_order.resize(this->dim * this->dim, 0.0);
+	this->z_order.resize(this->dim * this->dim, 0.0);
 	this->matrix.resize(this->dim, vector<float>(this->dim, 0.0));
 	vector<float> oj(this->dim, 0.0);
 	cout << "start init oj" << endl;
 	for(int i =0; i< this->dim; ++i){
 		oj[i] = out_degree(graph, i);
 	}
-	cout << "start init z_order" << endl;
+
+	/// matrix approach
+	cout << "start init matrix" << endl;
 	for(int i = 0; i < this->dim; ++i){
 		for(int j = 0; j < this->dim; ++j){
 			if(graph[i][j] == 1){
-//				this->z_order[interleave(j, i)] = 1.0/oj[j];
 				this->matrix[i][j] = 1.0/oj[j];
 			}
 			else if(oj[j] == 0){
-//				this->z_order[interleave(j, i)] = 1.0/this->dim;
 				this->matrix[i][j] = 1.0/this->dim;
 			}
 		}
 	}
+
+	/// z_order approach
+	cout << "start init z_order" << endl;
+	for(int i = 0; i< this->dim*this->dim; ++i){
+		u_int16_t col, row;
+		deinterleave(i, col, row);
+		/*
+		if(graph[row][col] == 1){
+			this->z_order[i] = 1.0/oj[col];
+		}
+		else if(oj[col] == 0){
+			this->z_order[i] = 1.0/this->dim;
+		}
+		 */
+		this->z_order[i] = matrix[row][col];
+
+	}
+
 	this->rank.resize(this->dim, 1.0/this->dim);
 }
 
 vector<float> page_rank::compute_page_rank(int iter, float beta){
 	float c = (1.0 - beta) / this->dim;
 	vector<float> results(this->dim, 0.0);
-	for(int k = 0; k < iter; ++k){
+	for(auto k = 0; k < iter; ++k){
 		cout << "iter: " << k << endl;
+
+		/// matrix approach
 		for(auto i = 0; i < this->dim; ++i){
 			float sum = 0.0;
 			for(auto j = 0; j < this->dim; ++j){
-//				sum += beta * this->z_order[interleave(j, i)] * this->rank[j];
+//				sum += this->z_order[interleave(j, i)] * this->rank[j];
 				sum += this->matrix[i][j] * this->rank[j];
 			}
 			results[i] = beta * sum + c;
 		}
+
+		//TODO: z_order approach rotto
+		for(auto i = 0; i < this->dim*this->dim; ++i){
+			u_int16_t col, row;
+			deinterleave(i, col, row);
+			results[row] += this->z_order[i] * this->rank[col];
+		}
+		for(auto i = 0; i < this->dim; ++i){
+			results[i] = beta * results[i] + c;
+		}
+
 		this->rank = results;
 	}
 	return this->rank;

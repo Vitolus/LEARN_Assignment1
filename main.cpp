@@ -12,20 +12,34 @@ float out_degree(vector<vector<float>>& M, int j) {
 	return out_degree;
 }
 
-uint64_t interleave(uint32_t x, uint32_t y) {
-	static const uint64_t M[] = {0x5555555555555555, 0x3333333333333333, 0x0F0F0F0F0F0F0F0F, 0x00FF00FF00FF00FF, 0x0000FFFF0000FFFF};
-	static const unsigned int S[] = {1, 2, 4, 8, 16};
-	x = (x | (x << S[4])) & M[4];
-	x = (x | (x << S[3])) & M[3];
-	x = (x | (x << S[2])) & M[2];
-	x = (x | (x << S[1])) & M[1];
-	x = (x | (x << S[0])) & M[0];
-	y = (y | (y << S[4])) & M[4];
-	y = (y | (y << S[3])) & M[3];
-	y = (y | (y << S[2])) & M[2];
-	y = (y | (y << S[1])) & M[1];
-	y = (y | (y << S[0])) & M[0];
-	return x | (y << 1);
+auto interleave(u_int16_t col, u_int16_t row){
+	static const u_int16_t M[] = {0x5555, 0x3333, 0x0F0F, 0x00FF};
+	static const u_int16_t S[] = {1, 2, 4, 8};
+	col = (col | (col << S[3])) & M[3];
+	col = (col | (col << S[2])) & M[2];
+	col = (col | (col << S[1])) & M[1];
+	col = (col | (col << S[0])) & M[0];
+	row = (row | (row << S[3])) & M[3];
+	row = (row | (row << S[2])) & M[2];
+	row = (row | (row << S[1])) & M[1];
+	row = (row | (row << S[0])) & M[0];
+	auto result = col | (row << 1);
+	return result;
+}
+
+void deinterleave(u_int32_t z, u_int16_t &col, u_int16_t &row) {
+	static const u_int16_t M[] = {0x5555, 0x3333, 0x0F0F, 0x00FF};
+	static const u_int16_t S[] = {0, 1, 2, 4};
+	col = z;
+	row = z >> 1;
+	col = (col | (col >> S[3])) & M[3];
+	col = (col | (col >> S[2])) & M[2];
+	col = (col | (col >> S[1])) & M[1];
+	col = (col | (col >> S[0])) & M[0];
+	row = (row | (row >> S[3])) & M[3];
+	row = (row | (row >> S[2])) & M[2];
+	row = (row | (row >> S[1])) & M[1];
+	row = (row | (row >> S[0])) & M[0];
 }
 
 
@@ -46,11 +60,25 @@ vector<float> compute_page_rank(int iter, float beta, int dim, vector<float>& z_
 
 
 int main() {
+	 for(short i = 0; i < 4; ++i){
+		 for(short j = 0; j < 4; ++j){
+			 cout << interleave(j, i) << " ";
+		 }
+		 cout << endl;
+	 }
+	 for(int i = 0; i < 16; ++i){
+		 u_int16_t col, row;
+		 deinterleave(i, col, row);
+		 cout << row << " " << col << endl;
+	 }
+
+	/*
 	page_rank pr("../datasets/p2p-Gnutella25.txt");
 	auto rank = pr.compute_page_rank(50, 0.85);
 	for(auto &i : rank){
 		cout << i << endl;
 	}
+	 */
 /*
 	// Create an adjacency matrix
 	vector<vector<float>> M = {

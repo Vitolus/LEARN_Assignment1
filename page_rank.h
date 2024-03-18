@@ -6,18 +6,20 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <omp.h>
 
 using namespace std;
 
 class page_rank{
     const string &filename;
-    vector<double> z_order, rank;
+    vector<float> z_order, rank;
+	vector<vector<float>> matrix;
 	uint dim;
     static auto interleave(u_int16_t, u_int16_t);
-	static double out_degree(vector<vector<double>> &, int);
+	static float out_degree(vector<vector<float>> &, int);
 public:
     explicit page_rank(const string &);
-	vector<double> compute_page_rank(int, double);
+	vector<float> compute_page_rank(int, float);
 };
 
 #endif //LEARN_ASSIGNMENT1_PAGE_RANK_H

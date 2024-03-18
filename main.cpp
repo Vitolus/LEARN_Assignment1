@@ -4,8 +4,8 @@
 
 using namespace std;
 
-double out_degree(vector<vector<double>>& M, int j) {
-	double out_degree = 0;
+float out_degree(vector<vector<float>>& M, int j) {
+	float out_degree = 0;
 	for(const auto& row : M) {
 		out_degree += row[j];
 	}
@@ -29,10 +29,10 @@ uint64_t interleave(uint32_t x, uint32_t y) {
 }
 
 
-vector<double> compute_page_rank(int iter, double beta, int dim, vector<double>& z_order, vector<double>& rank){
-	vector<double> results(dim, 0.0);
-	double c = (1.0 - beta) / dim;
+vector<float> compute_page_rank(int iter, float beta, int dim, vector<float>& z_order, vector<float>& rank){
+	float c = (1.0 - beta) / dim;
 	for(int k = 0; k < iter ; ++k){
+		vector<float> results(dim, 0.0);
 		for(auto i = 0; i < dim; ++i){
 			for(auto j = 0; j < dim; ++j){
 				results[i] += beta * z_order[interleave(j, i)] * rank[j];
@@ -47,23 +47,27 @@ vector<double> compute_page_rank(int iter, double beta, int dim, vector<double>&
 
 int main() {
 	page_rank pr("../datasets/p2p-Gnutella25.txt");
-	/*
+	auto rank = pr.compute_page_rank(50, 0.85);
+	for(auto &i : rank){
+		cout << i << endl;
+	}
+/*
 	// Create an adjacency matrix
-	vector<vector<double>> M = {
+	vector<vector<float>> M = {
 			{0, 0, 0, 0},
 			{1, 0, 1, 1},
 			{0, 0, 0, 0},
 			{1, 0, 1, 0}
 	};
-	vector<vector<double>> Z = {
+	vector<vector<float>> Z = {
 			{0,0,0,0},
 			{0,0,0,0},
 			{0,0,0,0},
 			{0,0,0,0}
 	};
 
-	vector<double> oj(M.size(), 0.0);
-	vector<double> z_order(M.size()*M.size(), 0.0);
+	vector<float> oj(M.size(), 0.0);
+	vector<float> z_order(M.size()*M.size(), 0.0);
 	for(int i =0; i< M.size(); ++i){
 		oj[i] = out_degree(M, i);
 	}
@@ -79,7 +83,7 @@ int main() {
 			}
 		}
 	}
-	vector<double> rank(M.size(), 1.0/M.size());
+	vector<float> rank(M.size(), 1.0/M.size());
 	compute_page_rank(50, 0.85, M.size(), z_order, rank);
 	for(auto &i : rank){
 		cout << i << " ";
@@ -98,6 +102,7 @@ int main() {
 	for(auto &i : z_order){
 		cout << i << " ";
 	}
-	 */
+
 	return 0;
+ */
 }

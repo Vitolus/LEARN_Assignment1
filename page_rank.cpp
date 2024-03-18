@@ -15,8 +15,8 @@ auto page_rank::interleave(u_int16_t col, u_int16_t row){
 	return result;
 }
 
-double page_rank::out_degree(vector<vector<double>> &graph, int col){
-	double degree = 0.0;
+float page_rank::out_degree(vector<vector<float>> &graph, int col){
+	float degree = 0.0;
 	for(const auto &row : graph){
 		degree += row[col];
 	}
@@ -47,7 +47,7 @@ page_rank::page_rank(const string &filename) : filename(filename){
 	this->dim = stoi(n_nodes);
 
 	/// initialize graph with 1 where there is an edge
-	vector<vector<double>> graph(this->dim, vector<double>(this->dim, 0.0));
+	vector<vector<float>> graph(this->dim, vector<float>(this->dim, 0.0));
 	while(getline(file, line)){
 		iss.str(line);
 		int start, arrive;
@@ -55,35 +55,45 @@ page_rank::page_rank(const string &filename) : filename(filename){
 		graph[arrive][start] = 1;
 	}
 	file.close();
+//TODO: fix z_order and substitute with matrix
 //TODO: take times
 	/// initialize z_order with 1/out_degree or 1/dim
-	this->z_order.resize(this->dim * this->dim, 0.0);
-	vector<double> oj(this->dim, 0.0);
+	cout << "start init" << endl;
+//	this->z_order.resize(this->dim * this->dim, 0.0);
+	this->matrix.resize(this->dim, vector<float>(this->dim, 0.0));
+	vector<float> oj(this->dim, 0.0);
+	cout << "start init oj" << endl;
 	for(int i =0; i< this->dim; ++i){
 		oj[i] = out_degree(graph, i);
 	}
+	cout << "start init z_order" << endl;
 	for(int i = 0; i < this->dim; ++i){
 		for(int j = 0; j < this->dim; ++j){
 			if(graph[i][j] == 1){
-				this->z_order[interleave(j, i)] = 1.0/oj[j];
+//				this->z_order[interleave(j, i)] = 1.0/oj[j];
+				this->matrix[i][j] = 1.0/oj[j];
 			}
 			else if(oj[j] == 0){
-				this->z_order[interleave(j, i)] = 1.0/this->dim;
+//				this->z_order[interleave(j, i)] = 1.0/this->dim;
+				this->matrix[i][j] = 1.0/this->dim;
 			}
 		}
 	}
 	this->rank.resize(this->dim, 1.0/this->dim);
 }
 
-vector<double> page_rank::compute_page_rank(int iter, double beta){
-	vector<double> results(this->dim, 0.0);
-	double c = (1.0 - beta) / this->dim;
-	for(int k = 0; k < iter ; ++k){
+vector<float> page_rank::compute_page_rank(int iter, float beta){
+	float c = (1.0 - beta) / this->dim;
+	vector<float> results(this->dim, 0.0);
+	for(int k = 0; k < iter; ++k){
+		cout << "iter: " << k << endl;
 		for(auto i = 0; i < this->dim; ++i){
+			float sum = 0.0;
 			for(auto j = 0; j < this->dim; ++j){
-				results[i] += beta * this->z_order[interleave(j, i)] * this->rank[j];
+//				sum += beta * this->z_order[interleave(j, i)] * this->rank[j];
+				sum += this->matrix[i][j] * this->rank[j];
 			}
-			results[i] += c;
+			results[i] = beta * sum + c;
 		}
 		this->rank = results;
 	}

@@ -72,15 +72,22 @@ page_rank::page_rank(const string &filename) : filename(filename){
 	cout << "start init z_order" << endl;
 	for(uint i = 0; i < this->dim; ++i){
 		for(uint j = 0; j < this->dim; ++j){
+			auto z = interleave(j, i);
+			if(z >= this->dim*this->dim){
+				cout << "i: " << interleave(j, i) << " row: " << i << " col: " << j << endl;
+				throw out_of_range("z is greater than dim*dim");
+			}
 			if(graph[i][j] == 1){
-				this->matrix[i][j] = 1.0/oj[j];
-				this->z_order[interleave(j, i)] = 1.0/oj[j];
+				float val = 1.0/oj[j];
+				this->matrix[i][j] = val;
+				this->z_order[z] = val;
 			}
 			else if(oj[j] == 0){
-				this->matrix[i][j] = 1.0/this->dim;
-				this->z_order[interleave(j, i)] = 1.0/this->dim;
+				float val = 1.0/this->dim;
+				this->matrix[i][j] = val;
+				this->z_order[z] = val;
 			}
-			if(this->z_order[interleave(j, i)] != this->matrix[i][j]){
+			if(this->z_order[z] != this->matrix[i][j]){
 				cout << "i: " << interleave(j, i) << " row: " << i << " col: " << j << endl;
 				cout << "z_order: " << this->z_order[i] << " matrix: " << this->matrix[i][j] << endl;
 				throw runtime_error("z_order and matrix are not equal");
@@ -107,7 +114,7 @@ vector<float> page_rank::compute_page_rank(int iter, float beta){
 		}
 */
 		/// z_order approach
-		for(auto i = 0; i < this->dim*this->dim; ++i){
+		for(uint i = 0; i < this->dim*this->dim; ++i){
 			uint col, row;
 			deinterleave(i, col, row);
 			results[row] += this->z_order[i] * this->rank[col];

@@ -1,8 +1,8 @@
 #include "page_rank.h"
 
-auto page_rank::interleave(u_int16_t col, u_int16_t row){
-	static const u_int16_t M[] = {0x5555, 0x3333, 0x0F0F, 0x00FF};
-	static const u_int16_t S[] = {1, 2, 4, 8};
+uint page_rank::interleave(uint col, uint row){
+	static const uint M[] = {0x55555555, 0x33333333, 0x0F0F0F0F, 0x00FF00FF};
+	static const uint S[] = {1, 2, 4, 8};
 	col = (col | (col << S[3])) & M[3];
 	col = (col | (col << S[2])) & M[2];
 	col = (col | (col << S[1])) & M[1];
@@ -11,24 +11,23 @@ auto page_rank::interleave(u_int16_t col, u_int16_t row){
 	row = (row | (row << S[2])) & M[2];
 	row = (row | (row << S[1])) & M[1];
 	row = (row | (row << S[0])) & M[0];
-	auto result = col | (row << 1);
-	return result;
+	return col | (row << 1);
 }
 
-//TODO: function broken give only [1][1] as result
-void page_rank::deinterleave(u_int32_t z, u_int16_t &col, u_int16_t &row) {
-	static const u_int16_t M[] = {0x5555, 0x3333, 0x0F0F, 0x00FF};
-	static const u_int16_t S[] = {1, 2, 4, 8};
-	row = z >> 1;
-	col = z;
-	col = (col | (col >> S[3])) & M[3];
-	col = (col | (col >> S[2])) & M[2];
-	col = (col | (col >> S[1])) & M[1];
+void page_rank::deinterleave(uint z, uint &col, uint &row) {
+	static const uint M[] = {0x33333333, 0x0F0F0F0F, 0x00FF00FF, 0x0000FFFF};
+	static const uint S[] = {1, 2, 4, 8};
+
+	col = z & 0x55555555;
+	row = (z >> 1) & 0x55555555;
 	col = (col | (col >> S[0])) & M[0];
-	row = (row | (row >> S[3])) & M[3];
-	row = (row | (row >> S[2])) & M[2];
-	row = (row | (row >> S[1])) & M[1];
+	col = (col | (col >> S[1])) & M[1];
+	col = (col | (col >> S[2])) & M[2];
+	col = (col | (col >> S[3])) & M[3];
 	row = (row | (row >> S[0])) & M[0];
+	row = (row | (row >> S[1])) & M[1];
+	row = (row | (row >> S[2])) & M[2];
+	row = (row | (row >> S[3])) & M[3];
 }
 
 float page_rank::out_degree(vector<vector<float>> &graph, int col){
@@ -97,7 +96,7 @@ page_rank::page_rank(const string &filename) : filename(filename){
 	/// z_order approach
 	cout << "start init z_order" << endl;
 	for(int i = 0; i< this->dim*this->dim; ++i){
-		u_int16_t col, row;
+		uint col, row;
 		deinterleave(i, col, row);
 		/*
 		if(graph[row][col] == 1){
@@ -132,7 +131,7 @@ vector<float> page_rank::compute_page_rank(int iter, float beta){
 
 		//TODO: z_order approach rotto
 		for(auto i = 0; i < this->dim*this->dim; ++i){
-			u_int16_t col, row;
+			uint col, row;
 			deinterleave(i, col, row);
 			results[row] += this->z_order[i] * this->rank[col];
 		}

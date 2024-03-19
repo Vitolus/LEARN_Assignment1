@@ -15,9 +15,9 @@ class page_rank{
     vector<float> z_order, rank;
 	vector<vector<float>> matrix;
 	uint dim;
-    static auto interleave(u_int16_t, u_int16_t);
+    static uint interleave(uint, uint);
+	static void deinterleave(uint, uint &, uint &);
 	static float out_degree(vector<vector<float>> &, int);
-	static void deinterleave(u_int32_t, u_int16_t &, u_int16_t &);
 public:
     explicit page_rank(const string &);
 	vector<float> compute_page_rank(int, float);

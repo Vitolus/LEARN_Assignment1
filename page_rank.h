@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -12,13 +13,12 @@ using namespace std;
 
 class page_rank{
     const string &filename;
-    vector<float> z_order, rank;
+    vector<float>  rank;
 	vector<vector<float>> matrix;
+	unordered_map<uint, float> z_order;
 	uint dim;
-	template<typename T>
-	T interleave(T col, T row);
-	template<typename T>
-	static void deinterleave(T, T &, T &);
+	static uint interleave(uint, uint);
+	static pair<uint, uint> deinterleave(uint);
 	static float out_degree(vector<vector<float>> &, int);
 public:
     explicit page_rank(const string &);

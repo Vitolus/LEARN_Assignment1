@@ -70,6 +70,7 @@ page_rank::page_rank(const string &filename) : filename(filename){
 		graph[arrive][start] = 1;
 	}
 	file.close();
+
 //TODO: take times
 	cout << "start init" << endl;
 	this->z_order.resize(this->dim * this->dim, 0.0);
@@ -79,46 +80,34 @@ page_rank::page_rank(const string &filename) : filename(filename){
 	for(int i =0; i< this->dim; ++i){
 		oj[i] = out_degree(graph, i);
 	}
-
-	/// matrix approach
-	cout << "start init matrix" << endl;
-	for(int i = 0; i < this->dim; ++i){
-		for(int j = 0; j < this->dim; ++j){
+//TODO: z = interleave(j, i); z_order[z] access memory not belonging to the vector
+	cout << "start init z_order" << endl;
+	for(uint i = 0; i < this->dim; ++i){
+		for(uint j = 0; j < this->dim; ++j){
 			if(graph[i][j] == 1){
 				this->matrix[i][j] = 1.0/oj[j];
+				this->z_order[interleave(j, i)] = 1.0/oj[j];
 			}
 			else if(oj[j] == 0){
 				this->matrix[i][j] = 1.0/this->dim;
+				this->z_order[interleave(j, i)] = 1.0/this->dim;
+			}
+			if(this->z_order[interleave(j, i)] != this->matrix[i][j]){
+				cout << "i: " << interleave(j, i) << " row: " << i << " col: " << j << endl;
+				cout << "z_order: " << this->z_order[i] << " matrix: " << this->matrix[i][j] << endl;
+				throw runtime_error("z_order and matrix are not equal");
 			}
 		}
 	}
-
-	/// z_order approach
-	cout << "start init z_order" << endl;
-	for(int i = 0; i< this->dim*this->dim; ++i){
-		uint col, row;
-		deinterleave(i, col, row);
-		/*
-		if(graph[row][col] == 1){
-			this->z_order[i] = 1.0/oj[col];
-		}
-		else if(oj[col] == 0){
-			this->z_order[i] = 1.0/this->dim;
-		}
-		 */
-		this->z_order[i] = matrix[row][col];
-
-	}
-
 	this->rank.resize(this->dim, 1.0/this->dim);
 }
 
 vector<float> page_rank::compute_page_rank(int iter, float beta){
 	float c = (1.0 - beta) / this->dim;
-	vector<float> results(this->dim, 0.0);
 	for(auto k = 0; k < iter; ++k){
+		vector<float> results(this->dim, 0.0);
 		cout << "iter: " << k << endl;
-
+/*
 		/// matrix approach
 		for(auto i = 0; i < this->dim; ++i){
 			float sum = 0.0;
@@ -128,8 +117,8 @@ vector<float> page_rank::compute_page_rank(int iter, float beta){
 			}
 			results[i] = beta * sum + c;
 		}
-
-		//TODO: z_order approach rotto
+*/
+		/// z_order approach
 		for(auto i = 0; i < this->dim*this->dim; ++i){
 			uint col, row;
 			deinterleave(i, col, row);

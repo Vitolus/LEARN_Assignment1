@@ -12,9 +12,9 @@ float out_degree(vector<vector<float>>& M, int j) {
 	return out_degree;
 }
 
-auto interleave(u_int16_t col, u_int16_t row){
-	static const u_int16_t M[] = {0x5555, 0x3333, 0x0F0F, 0x00FF};
-	static const u_int16_t S[] = {1, 2, 4, 8};
+uint interleave(uint col, uint row){
+	static const uint M[] = {0x55555555, 0x33333333, 0x0F0F0F0F, 0x00FF00FF};
+	static const uint S[] = {1, 2, 4, 8};
 	col = (col | (col << S[3])) & M[3];
 	col = (col | (col << S[2])) & M[2];
 	col = (col | (col << S[1])) & M[1];
@@ -23,62 +23,53 @@ auto interleave(u_int16_t col, u_int16_t row){
 	row = (row | (row << S[2])) & M[2];
 	row = (row | (row << S[1])) & M[1];
 	row = (row | (row << S[0])) & M[0];
-	auto result = col | (row << 1);
-	return result;
+	return col | (row << 1);
 }
 
-void deinterleave(u_int32_t z, u_int16_t &col, u_int16_t &row) {
-	static const u_int16_t M[] = {0x5555, 0x3333, 0x0F0F, 0x00FF};
-	static const u_int16_t S[] = {1, 2, 4, 8};
-	row = z >> 1;
-	col = z;
-	col = (col | (col >> S[3])) & M[3];
-	col = (col | (col >> S[2])) & M[2];
-	col = (col | (col >> S[1])) & M[1];
+void deinterleave(uint z, uint &col, uint &row) {
+	static const uint M[] = {0x33333333, 0x0F0F0F0F, 0x00FF00FF, 0x0000FFFF};
+	static const uint S[] = {1, 2, 4, 8};
+
+	col = z & 0x55555555;
+	row = (z >> 1) & 0x55555555;
 	col = (col | (col >> S[0])) & M[0];
-	row = (row | (row >> S[3])) & M[3];
-	row = (row | (row >> S[2])) & M[2];
-	row = (row | (row >> S[1])) & M[1];
+	col = (col | (col >> S[1])) & M[1];
+	col = (col | (col >> S[2])) & M[2];
+	col = (col | (col >> S[3])) & M[3];
 	row = (row | (row >> S[0])) & M[0];
+	row = (row | (row >> S[1])) & M[1];
+	row = (row | (row >> S[2])) & M[2];
+	row = (row | (row >> S[3])) & M[3];
 }
 
 
-vector<float> compute_page_rank(int iter, float beta, int dim, vector<float>& z_order, vector<float>& rank){
+void compute_page_rank(int iter, float beta, int dim, vector<vector<float>> &matrix, vector<float>& z_order, vector<float>& rank){
 	float c = (1.0 - beta) / dim;
-	for(int k = 0; k < iter ; ++k){
+	for(auto k = 0; k < iter; ++k){
+		cout << "iter: " << k << endl;
 		vector<float> results(dim, 0.0);
-		for(auto i = 0; i < dim; ++i){
-			for(auto j = 0; j < dim; ++j){
-				results[i] += beta * z_order[interleave(j, i)] * rank[j];
-			}
-			results[i] += c;
+
+		/// z_order approach
+		for(auto i = 0; i < dim*dim; ++i){
+			uint col, row;
+			deinterleave(i, col, row);
+			results[row] += z_order[i] *rank[col];
 		}
+		for(auto i = 0; i < dim; ++i){
+			results[i] = beta * results[i] + c;
+		}
+
 		rank = results;
 	}
-	return rank;
 }
 
 
 int main() {
-	 for(short i = 0; i < 4; ++i){
-		 for(short j = 0; j < 4; ++j){
-			 cout << interleave(j, i) << " ";
-		 }
-		 cout << endl;
-	 }
-	 for(int i = 0; i < 16; ++i){
-		 u_int16_t col, row;
-		 deinterleave(i, col, row);
-		 cout << row << " " << col << endl;
-	 }
-
-	/*
-	page_rank pr("../datasets/p2p-Gnutella25.txt");
-	auto rank = pr.compute_page_rank(50, 0.85);
+	auto *pr = new page_rank("../datasets/p2p-Gnutella25.txt");
+	auto rank = pr->compute_page_rank(50, 0.85);
 	for(auto &i : rank){
 		cout << i << endl;
 	}
-	 */
 /*
 	// Create an adjacency matrix
 	vector<vector<float>> M = {
@@ -102,17 +93,16 @@ int main() {
 	for(int i = 0; i < M.size(); ++i){
 		for(int j = 0; j < M.size(); ++j){
 			if(M[i][j] == 1){
-				Z[i][j] = 1.0/oj[j];
-				z_order[interleave(j, i)] = Z[i][j];
+				z_order[interleave(j, i)] = 1.0/oj[j];
 			}
 			else if(oj[j] == 0){
-				Z[i][j] = 1.0/M.size();
-				z_order[interleave(j, i)] = Z[i][j];
+				z_order[interleave(j, i)] = 1.0/M.size();
 			}
 		}
 	}
 	vector<float> rank(M.size(), 1.0/M.size());
-	compute_page_rank(50, 0.85, M.size(), z_order, rank);
+	compute_page_rank(50, 0.85, M.size(), Z, z_order, rank);
+	cout << "Rankm: ";
 	for(auto &i : rank){
 		cout << i << " ";
 	}
@@ -130,7 +120,6 @@ int main() {
 	for(auto &i : z_order){
 		cout << i << " ";
 	}
-
+*/
 	return 0;
- */
 }

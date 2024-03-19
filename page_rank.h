@@ -15,8 +15,10 @@ class page_rank{
     vector<float> z_order, rank;
 	vector<vector<float>> matrix;
 	uint dim;
-    static uint interleave(uint, uint);
-	static void deinterleave(uint, uint &, uint &);
+	template<typename T>
+	T interleave(T col, T row);
+	template<typename T>
+	static void deinterleave(T, T &, T &);
 	static float out_degree(vector<vector<float>> &, int);
 public:
     explicit page_rank(const string &);

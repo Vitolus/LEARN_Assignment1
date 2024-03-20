@@ -30,7 +30,7 @@ page_rank::page_rank(const string &filename) : filename(filename){
 	}
 	getline(file, line); // skip last header line
 	this->dim = stoi(n_nodes);
-	vector<vector<float>> graph(this->dim, vector<float>(this->dim, 0.0));
+	vector<vector<short>> graph(this->dim, vector<short>(this->dim, 0.0));
 	/// initialize graph with 1 where there is an edge
 	while(getline(file, line)){
 		iss.str(line);
@@ -53,8 +53,8 @@ page_rank::page_rank(const string &filename) : filename(filename){
 		}
 		float trans = (oj > 0) ? 1.0/oj : 1.0/this->dim;
 		vals.insert(vals.end(), oj, trans);
+		rows.push_back(cols.size());
 	}
-
 
 	/// matrix approach
 	/*
@@ -85,6 +85,32 @@ page_rank::page_rank(const string &filename) : filename(filename){
 }
 
 vector<float> page_rank::compute_page_rank(int iter, float beta){
+	/*
+	int n = M.row_ptr.size() - 1;
+    std::vector<double> v(n, 1.0 / n);
+
+    for (int iter = 0; iter < max_iters; ++iter) {
+        std::vector<double> v_new(n, (1 - b) / n);
+        for (int j = 0; j < n; ++j) {
+            for (int idx = M.row_ptr[j]; idx < M.row_ptr[j + 1]; ++idx) {
+                int i = M.col_idx[idx];
+                v_new[i] += b * M.values[idx] * v[j];
+            }
+        }
+
+        double err = 0;
+        for (int i = 0; i < n; ++i) {
+            err += std::abs(v[i] - v_new[i]);
+        }
+        if (err < tol) {
+            return v_new;
+        }
+
+        v = v_new;
+    }
+
+    return v;
+	 */
 	float c = (1.0 - beta) / this->dim;
 	for(auto k = 0; k < iter; ++k){
 		vector<float> results(this->dim, 0.0);

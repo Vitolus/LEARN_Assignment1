@@ -42,18 +42,18 @@ page_rank::page_rank(const string &filename) : filename(filename){
 
 //TODO: take times
 	/// csr approach
-	rows.push_back(0);
-	for(auto j =0; j < this->dim; ++j){
-		float oj = 0.0;
-		for(auto i = 0; i < this->dim; ++i){
-			if(graph[i][j] == 1){
-				cols.push_back(i);
-				++oj;
+	rows.push_back(0);  // first element is always 0
+	for(auto j =0; j < this->dim; ++j){  // iterate over columns
+		float oj = 0.0;  
+		for(auto i = 0; i < this->dim; ++i){  // iterate over rows
+			if(graph[i][j] == 1){  // if there is an edge
+				cols.push_back(i);  // add row index to cols
+				++oj;  // increment out degree
 			}
 		}
-		float trans = (oj > 0) ? 1.0/oj : 1.0/this->dim;
-		vals.insert(vals.end(), oj, trans);
-		rows.push_back(cols.size());
+		float trans = (oj > 0) ? 1.0/oj : 1.0/this->dim;  // if out degree is 0, set transition to 1/n else 1/out degree
+		vals.insert(vals.end(), oj, trans);  // insert oj times transition value
+		rows.push_back(cols.size());  // add number of elements in cols to rows
 	}
 
 	/// matrix approach

@@ -1,14 +1,17 @@
 #include "page_rank.h"
 
-float page_rank::out_degree(vector<vector<float>> &graph, int col){
-	float degree = 0.0;
-	for(const auto &row : graph){
-		degree += row[col];
+// Function to calculate outdegree of each node
+vector<float> page_rank::outDegree(const vector<vector<short>>& graph) {
+	vector<float> outdegree(graph.size(), 0);
+	for (int j = 0; j < graph.size(); ++j) {
+		for (const auto & i : graph) {
+			outdegree[j] += i[j];
+		}
 	}
-	return degree;
+	return outdegree;
 }
 
-page_rank::page_rank(const string &filename) : filename(filename){
+page_rank::page_rank(const string &filename) : filename(filename), vals({0.0}), cols(), rows(){
 	/// header processing
 	ifstream file(this->filename);
 	if(!file.is_open()){
@@ -30,8 +33,8 @@ page_rank::page_rank(const string &filename) : filename(filename){
 	}
 	getline(file, line); // skip last header line
 	this->dim = stoi(n_nodes);
-	vector<vector<short>> graph(this->dim, vector<short>(this->dim, 0.0));
 	/// initialize graph with 1 where there is an edge
+	vector<vector<short>> graph(this->dim, vector<short>(this->dim, 0.0));
 	while(getline(file, line)){
 		iss.str(line);
 		int start, arrive;
@@ -42,18 +45,18 @@ page_rank::page_rank(const string &filename) : filename(filename){
 
 //TODO: take times
 	/// csr approach
-	rows.push_back(0);  // first element is always 0
-	for(auto j =0; j < this->dim; ++j){  // iterate over columns
-		float oj = 0.0;  
-		for(auto i = 0; i < this->dim; ++i){  // iterate over rows
-			if(graph[i][j] == 1){  // if there is an edge
-				cols.push_back(i);  // add row index to cols
-				++oj;  // increment out degree
+	vector<float> oj = outDegree(graph);
+	for(int i = 0; i < this->dim; ++i){
+		for(int j = 0; j < this->dim; ++j){
+			if(graph[i][j] == 1){
+				this->vals.push_back(1.0 / oj[j]);
+				this->cols.push_back(j);
+			}else if(oj[j] == 0){
+				this->vals.push_back(1.0 / this->dim);
+				this->cols.push_back(j);
 			}
 		}
-		float trans = (oj > 0) ? 1.0/oj : 1.0/this->dim;  // if out degree is 0, set transition to 1/n else 1/out degree
-		vals.insert(vals.end(), oj, trans);  // insert oj times transition value
-		rows.push_back(cols.size());  // add number of elements in cols to rows
+		this->rows.push_back(this->vals.size());
 	}
 
 	/// matrix approach
@@ -85,32 +88,7 @@ page_rank::page_rank(const string &filename) : filename(filename){
 }
 
 vector<float> page_rank::compute_page_rank(int iter, float beta){
-	/*
-	int n = M.row_ptr.size() - 1;
-    std::vector<double> v(n, 1.0 / n);
 
-    for (int iter = 0; iter < max_iters; ++iter) {
-        std::vector<double> v_new(n, (1 - b) / n);
-        for (int j = 0; j < n; ++j) {
-            for (int idx = M.row_ptr[j]; idx < M.row_ptr[j + 1]; ++idx) {
-                int i = M.col_idx[idx];
-                v_new[i] += b * M.values[idx] * v[j];
-            }
-        }
-
-        double err = 0;
-        for (int i = 0; i < n; ++i) {
-            err += std::abs(v[i] - v_new[i]);
-        }
-        if (err < tol) {
-            return v_new;
-        }
-
-        v = v_new;
-    }
-
-    return v;
-	 */
 	float c = (1.0 - beta) / this->dim;
 	for(auto k = 0; k < iter; ++k){
 		vector<float> results(this->dim, 0.0);

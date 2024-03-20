@@ -41,6 +41,23 @@ page_rank::page_rank(const string &filename) : filename(filename){
 	file.close();
 
 //TODO: take times
+	/// csr approach
+	rows.push_back(0);
+	for(auto j =0; j < this->dim; ++j){
+		float oj = 0.0;
+		for(auto i = 0; i < this->dim; ++i){
+			if(graph[i][j] == 1){
+				cols.push_back(i);
+				++oj;
+			}
+		}
+		float trans = (oj > 0) ? 1.0/oj : 1.0/this->dim;
+		vals.insert(vals.end(), oj, trans);
+	}
+
+
+	/// matrix approach
+	/*
 	cout << "start init" << endl;
 	this->matrix.resize(this->dim, vector<float>(this->dim, 0.0));
 
@@ -56,19 +73,14 @@ page_rank::page_rank(const string &filename) : filename(filename){
 			if(graph[i][j] == 1){
 				float val = 1.0/oj[j];
 				this->matrix[i][j] = val;
-				this->rows.push_back(i);
-				this->cols.push_back(j);
-				this->vals.push_back(val);
 			}
 			else if(oj[j] == 0){
 				float val = 1.0/this->dim;
 				this->matrix[i][j] = val;
-				this->rows.push_back(i);
-				this->cols.push_back(j);
-				this->vals.push_back(val);
 			}
 		}
 	}
+	*/
 	this->rank.resize(this->dim, 1.0/this->dim);
 }
 

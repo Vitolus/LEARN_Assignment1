@@ -1,6 +1,5 @@
 #include "page_rank.h"
 
-// Function to calculate outdegree of each node
 vector<int> page_rank::outDegree(const vector<vector<short>>& graph) {
 	vector<int> oj(graph.size(), 0);
 	for (auto j = 0; j < graph[0].size(); ++j) {
@@ -11,7 +10,7 @@ vector<int> page_rank::outDegree(const vector<vector<short>>& graph) {
 	return oj;
 }
 
-page_rank::page_rank(const string &filename, int n_thread) : filename(filename), n_threads(n_thread){
+page_rank::page_rank(const string &filename) : filename(filename), rank(){
 	/// header processing
 	ifstream file(this->filename);
 	if(!file.is_open()){
@@ -32,9 +31,9 @@ page_rank::page_rank(const string &filename, int n_thread) : filename(filename),
 		}
 	}
 	getline(file, line); // skip last header line
-	this->dim = stoi(n_nodes);
+	dim = stoi(n_nodes);
 	/// initialize graph with 1 where there is an edge
-	vector<vector<short>> graph(this->dim, vector<short>(this->dim, 0));
+	vector<vector<short>> graph(dim, vector<short>(dim, 0));
 	while(getline(file, line)){
 		iss.str(line);
 		int start, arrive;
@@ -45,40 +44,44 @@ page_rank::page_rank(const string &filename, int n_thread) : filename(filename),
 
 	cout << "start init oj" << endl;
 	vector<int> oj = outDegree(graph);
-	this->rows = {0};
+	rows = {0};
 	cout << "start init transition" << endl;
-	for(auto i = 0; i < this->dim; ++i){
-		for(auto j = 0; j < this->dim; ++j){
+	for(auto i = 0; i < dim; ++i){
+		for(auto j = 0; j < dim; ++j){
 			if(graph[i][j] == 1){
 				auto val = static_cast<float>(1.0/oj[j]);
-				this->vals.push_back(val);
-				this->cols.push_back(j);
+				vals.push_back(val);
+				cols.push_back(j);
 			}
 			else if(oj[j] == 0){
-				auto val = static_cast<float>(1.0/this->dim);
-				this->vals.push_back(val);
-				this->cols.push_back(j);
+				auto val = static_cast<float>(1.0/dim);
+				vals.push_back(val);
+				cols.push_back(j);
 			}
 		}
-		this->rows.push_back(this->vals.size());
+		rows.push_back(vals.size());
 	}
-	this->rank.resize(this->dim, static_cast<float>(1.0/this->dim));
+	rank.resize(dim, static_cast<float>(1.0/dim));
 }
 
-vector<float> page_rank::compute_page_rank(int iter, float beta){
-	this->rank.resize(this->dim, static_cast<float>(1.0/this->dim));
-	auto c = static_cast<float>((1.0 - beta) / this->dim);
+const vector<float> &page_rank::getRank() const{
+	return rank;
+}
+
+vector<float> page_rank::compute_page_rank(int n_threads, int iter, float beta){
+	rank.resize(dim, static_cast<float>(1.0/dim));
+	auto c = static_cast<float>((1.0 - beta) / dim);
 	for(auto k = 0; k < iter; ++k){
-		vector<float> results(this->dim, 0.0);
+		vector<float> results(dim, 0.0);
 		cout << "iter: " << k << endl;
-		for(auto i = 0; i < this->dim; ++i){
+#pragma omp parallel for if(n_threads > 1) num_threads(n_threads)
+		for(auto i = 0; i < dim; ++i){
 			float sum = 0.0;
-			for(auto j = this->rows[i]; j < this->rows[i+1]; ++j){
-				sum += this->vals[j] * this->rank[this->cols[j]];
+			for(auto j = rows[i]; j < rows[i+1]; ++j){
+				sum += vals[j] * rank[cols[j]];
 			}
 			results[i] = beta * sum + c;
 		}
-		this->rank = results;
+		rank = results;
 	}
-	return this->rank;
 }

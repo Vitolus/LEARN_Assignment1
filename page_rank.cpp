@@ -11,7 +11,7 @@ vector<int> page_rank::outDegree(const vector<vector<short>>& graph) {
 	return oj;
 }
 
-page_rank::page_rank(const string &filename) : filename(filename){
+page_rank::page_rank(const string &filename, int n_thread) : filename(filename), n_threads(n_thread){
 	/// header processing
 	ifstream file(this->filename);
 	if(!file.is_open()){

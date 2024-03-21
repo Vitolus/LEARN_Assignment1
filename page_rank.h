@@ -12,6 +12,7 @@ using namespace std;
 
 class page_rank{
     const string &filename;
+	int n_threads;
 	uint dim;
     vector<float> rank;
 	vector<uint> rows, cols;
@@ -19,7 +20,7 @@ class page_rank{
 	vector<vector<float>> matrix;
 	static vector<int> outDegree(const vector<vector<short>> &);
 public:
-    explicit page_rank(const string &);
+    explicit page_rank(const string &, int);
 	vector<float> compute_page_rank(int, float);
 };
 

@@ -11,7 +11,7 @@ vector<int> page_rank::outDegree(const vector<vector<short>>& graph) {
 	return oj;
 }
 
-page_rank::page_rank(const string &filename, int n_thread) : filename(filename), n_threads(n_thread){
+page_rank::page_rank(const string &filename) : filename(filename){
 	/// header processing
 	ifstream file(this->filename);
 	if(!file.is_open()){
@@ -69,12 +69,13 @@ const vector<float> &page_rank::getRank() const{
 	return rank;
 }
 
-vector<float> page_rank::compute_page_rank(int iter, float beta){
+void page_rank::compute_page_rank(int n_threads, int iter, float beta){
 	rank.resize(dim, static_cast<float>(1.0/dim));
 	auto c = static_cast<float>((1.0 - beta) / dim);
 	for(auto k = 0; k < iter; ++k){
 		vector<float> results(dim, 0.0);
 		cout << "iter: " << k << endl;
+#pragma omp parallel for if(n_threads > 1) num_threads(n_threads) default(none) shared(beta, c, results)
 		for(auto i = 0; i < dim; ++i){
 			float sum = 0.0;
 			for(auto j = rows[i]; j < rows[i+1]; ++j){
@@ -84,5 +85,4 @@ vector<float> page_rank::compute_page_rank(int iter, float beta){
 		}
 		rank = results;
 	}
-	return rank;
 }

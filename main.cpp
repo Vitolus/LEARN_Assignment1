@@ -9,8 +9,9 @@ int main(int argc, char *argv[]) { // filepath, n_threads
 		cout << "Usage: " << argv[0] << " <filepath> <n_threads>" << endl;
 		return 1;
 	}
-	auto *pr = new page_rank(argv[1], stoi(argv[2]));
-	auto rank = pr->compute_page_rank(50, 0.85);
+	auto *pr = new page_rank(argv[1]);
+	pr->compute_page_rank(stoi(argv[2]), 50, 0.85);
+	auto rank = pr->getRank();
 	for(auto i = 0; i < rank.size(); ++i){
 		cout << "rank[" << i << "]= " << rank[i] << endl;
 	}

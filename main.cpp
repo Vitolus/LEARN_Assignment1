@@ -10,10 +10,13 @@ int main(int argc, char *argv[]) { // filepath, n_threads
 		return 1;
 	}
 	auto *pr = new page_rank(argv[1]);
+	auto time = omp_get_wtime();
 	pr->compute_page_rank(stoi(argv[2]), 50, 0.85);
+	time = omp_get_wtime() - time;
 	auto rank = pr->getRank();
 	for(auto i = 0; i < rank.size(); ++i){
 		cout << "rank[" << i << "]= " << rank[i] << endl;
 	}
+	cout << "time: " << time << endl;
 	return 0;
 }

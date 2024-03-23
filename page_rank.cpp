@@ -10,30 +10,52 @@ vector<int> page_rank::outDegree(const vector<vector<short>>& graph) {
 	return oj;
 }
 
-page_rank::page_rank(const string &filename) : filename(filename){
-	/// header processing
+page_rank::page_rank(const string &filename) : filename(filename), dim(0){
+	/// first pass to get the dimension of the graph
+	cout << "first pass reading file" << endl;
 	ifstream file(this->filename);
 	if(!file.is_open()){
 		cout << "file not found" << endl;
 		return;
 	}
 	string line;
-	for(short i = 0; i < 2; ++i){
-		getline(file, line); // skip first two header lines
-	}
-	getline(file, line); // line with number of nodes and edges
-	istringstream iss(line);
-	string n_nodes;
-	while(iss >> n_nodes){
-		if(n_nodes == "Nodes:"){
-			iss >> n_nodes;  // get number of nodes
-			break;
+	istringstream iss;
+	while(getline(file, line)){
+		if(line[0] == '#'){
+			continue;
 		}
+		iss.str(line);
+		int start, arrive;
+		iss >> start >> arrive;
+		dim = max(dim, max(start, arrive) + 1);
+		break;
 	}
-	getline(file, line); // skip last header line
-	dim = stoi(n_nodes);
-	/// initialize graph with 1 where there is an edge
+	while(getline(file, line)){
+		iss.str(line);
+		int start, arrive;
+		iss >> start >> arrive;
+		dim = max(dim, max(start, arrive) + 1);
+	}
+	file.close();
+	cout << "dimension of the graph: " << dim << endl;
 	vector<vector<short>> graph(dim, vector<short>(dim, 0));
+	cout << "second pass reading file" << endl;
+	/// second pass to initialize graph with 1 where there is an edge
+	file.open(this->filename);
+	if(!file.is_open()){
+		cout << "file not found" << endl;
+		return;
+	}
+	while(getline(file, line)){
+		if(line[0] == '#'){
+			continue;
+		}
+		iss.str(line);
+		int start, arrive;
+		iss >> start >> arrive;
+		graph[arrive][start] = 1;
+		break;
+	}
 	while(getline(file, line)){
 		iss.str(line);
 		int start, arrive;

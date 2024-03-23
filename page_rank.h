@@ -12,7 +12,7 @@ using namespace std;
 
 class page_rank{
     const string &filename;
-	uint dim;
+	int dim;
     vector<float> rank;
 	vector<uint> rows, cols;
 	vector<float> vals;

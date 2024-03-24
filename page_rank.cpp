@@ -99,7 +99,7 @@ void page_rank::compute_page_rank(int n_threads, int iter, float beta){
 		default(none) shared(beta, c, results)
 		for(auto i = 0; i < dim; ++i){
 			float sum = 0.0;
-			#pragma omp simd reduction(+:sum)
+			#pragma omp parallel for reduction(+:sum) default(none) shared(i)
 			for(auto j = rows[i]; j < rows[i+1]; ++j){
 				sum += vals[j] * rank[cols[j]];
 			}

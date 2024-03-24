@@ -1,10 +1,10 @@
 #include "page_rank.h"
 
-vector<int> page_rank::outDegree(const vector<vector<short>>& graph) {
-	vector<int> oj(graph.size(), 0);
-	for (auto j = 0; j < graph[0].size(); ++j) {
-		for (const auto & i : graph) {
-			oj[j] += i[j];
+vector<int> page_rank::outDegree(const vector<short>& graph) const{
+	vector<int> oj(dim, 0);
+	for (auto j = 0; j < dim; ++j) {
+		for (auto i = 0; i < dim; ++i){
+			oj[j] += graph[i*dim + j];
 		}
 	}
 	return oj;
@@ -38,7 +38,7 @@ page_rank::page_rank(const string &filename) : filename(filename), dim(0){
 	}
 	file.close();
 	cout << "dimension of the graph: " << dim << endl;
-	vector<vector<short>> graph(dim, vector<short>(dim, 0));
+	vector<short> graph(dim*dim, 0);
 	cout << "second pass reading file" << endl;
 	/// second pass to initialize graph with 1 where there is an edge
 	file.open(this->filename);
@@ -53,14 +53,14 @@ page_rank::page_rank(const string &filename) : filename(filename), dim(0){
 		iss.str(line);
 		int start, arrive;
 		iss >> start >> arrive;
-		graph[arrive][start] = 1;
+		graph[arrive*dim +start] = 1;
 		break;
 	}
 	while(getline(file, line)){
 		iss.str(line);
 		int start, arrive;
 		iss >> start >> arrive;
-		graph[arrive][start] = 1;
+		graph[arrive*dim +start] = 1;
 	}
 	file.close();
 	/// compute out degree vector
@@ -69,7 +69,7 @@ page_rank::page_rank(const string &filename) : filename(filename), dim(0){
 	rows = {0};
 	for(auto i = 0; i < dim; ++i){
 		for(auto j = 0; j < dim; ++j){
-			if(graph[i][j] == 1){
+			if(graph[i*dim +j] == 1){
 				auto val = static_cast<float>(1.0/oj[j]);
 				vals.push_back(val);
 				cols.push_back(j);

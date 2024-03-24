@@ -17,6 +17,9 @@ int main(int argc, char *argv[]) { // filepath, n_threads
 	for(auto i = 0; i < 5; ++i){
 		cout << "rank[" << i << "]= " << rank[i] << endl;
 	}
+	for(auto i = rank.size() - 5; i < rank.size(); ++i){
+		cout << "rank[" << i << "]= " << rank[i] << endl;
+	}
 	cout << "time to perform page rank: " << time << endl;
 	return 0;
 }

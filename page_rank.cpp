@@ -96,10 +96,10 @@ void page_rank::compute_page_rank(int n_threads, int iter, float beta){
 	for(auto k = 0; k < iter; ++k){
 		vector<float> results(dim, 0.0);
 		#pragma omp parallel for if(n_threads > 1) num_threads(n_threads) schedule(dynamic) \
-		default(none) shared(beta, c, results)
+		default(none) shared(beta, c, results, n_threads)
 		for(auto i = 0; i < dim; ++i){
 			float sum = 0.0;
-			#pragma omp parallel for reduction(+:sum) default(none) shared(i)
+			#pragma omp parallel for if(n_threads > 1) reduction(+:sum) default(none) shared(i)
 			for(auto j = rows[i]; j < rows[i+1]; ++j){
 				sum += vals[j] * rank[cols[j]];
 			}

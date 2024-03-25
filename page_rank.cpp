@@ -38,6 +38,7 @@ page_rank::page_rank(const string &filename) : filename(filename), dim(0){
 	}
 	file.close();
 	cout << "dimension of the graph: " << dim << endl;
+//TODO: consider unordered_map of vectors insted of vector of vectors to store only non zero values
 	vector<short> graph(dim*dim, 0);
 	cout << "second pass reading file" << endl;
 	/// second pass to initialize graph with 1 where there is an edge
@@ -56,16 +57,23 @@ page_rank::page_rank(const string &filename) : filename(filename), dim(0){
 		graph[arrive*dim +start] = 1;
 		break;
 	}
-//TODO: parallelize this loop
-	#pragma omp parallel
-	while(getline(file, line)){
-		iss.str(line);
-		int start, arrive;
-		iss >> start >> arrive;
-		graph[arrive*dim +start] = 1;
+	#pragma omp parallel num_threads(omp_get_max_threads()) default(none) shared(file, line, iss, graph)
+	{
+		#pragma omp single
+		while(getline(file, line)){
+			#pragma omp task default(none) shared(line, graph) private(iss)
+			{
+				iss.str(line);
+				int start, arrive;
+				iss >> start >> arrive;
+//TODO: gives segmentation fault if arrive*dim + start is not in the graph
+				graph[arrive*dim +start] = 1;
+			}
+		}
 	}
 	file.close();
 	/// compute out degree vector
+	cout << "computing out degree vector" << endl;
 	vector<int> oj = outDegree(graph);
 	/// create CSR transition matrix
 	rows = {0};

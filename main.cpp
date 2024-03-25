@@ -9,8 +9,8 @@ int main(int argc, char *argv[]) { // filepath, n_threads
 		cout << "Usage: " << argv[0] << " <filepath> <n_threads>" << endl;
 		return 1;
 	}
-	vector<float> times(stoi(argv[2], 0));
-	vector<float> speedups(stoi(argv[2], 0));
+	vector<float> times(stoi(argv[2]), 0.0);
+	vector<float> speedups(stoi(argv[2]), 0.0);
 	auto *pr = new page_rank(argv[1]);
 	for(auto i = 1; i <= stoi(argv[2]); ++i){
 		auto time = omp_get_wtime();

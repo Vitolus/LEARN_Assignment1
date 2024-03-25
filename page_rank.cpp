@@ -56,6 +56,8 @@ page_rank::page_rank(const string &filename) : filename(filename), dim(0){
 		graph[arrive*dim +start] = 1;
 		break;
 	}
+//TODO: parallelize this loop
+	#pragma omp parallel
 	while(getline(file, line)){
 		iss.str(line);
 		int start, arrive;

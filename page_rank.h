@@ -17,7 +17,7 @@ class page_rank{
 	vector<uint> rows, cols;
 	vector<float> vals;
 	vector<vector<float>> matrix;
-	[[nodiscard]] vector<int> outDegree(const vector<short> &) const;
+	[[nodiscard]] vector<int> outDegree(const vector<vector<short>> &) const;
 public:
     explicit page_rank(const string &);
 	[[nodiscard]] const vector<float> &getRank() const;

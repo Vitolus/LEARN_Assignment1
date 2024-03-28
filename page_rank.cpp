@@ -14,6 +14,14 @@ vector<int> page_rank::outDegree(const vector<vector<short>>& graph) const{
 	return oj;
 }
 
+vector<int> page_rank::outDegree(const unordered_map<int, unordered_set<int>>& graph_out) const{
+	vector<int> oj(nodes, 0);
+	for(auto i : graph_out){
+		oj[i.first] = i.second.size();
+	}
+	return oj;
+}
+
 page_rank::page_rank(const string &filename) : filename(filename), nodes(0), edges(0){
 	/// first pass to get the dimension of the graph
 	cout << "first pass reading file" << endl;
@@ -44,6 +52,8 @@ page_rank::page_rank(const string &filename) : filename(filename), nodes(0), edg
 	file.close();
 //TODO: consider unordered_map of vectors insted of vector of vectors to store only non zero values
 	vector<vector<short>> graph(nodes, vector<short>(nodes, 0));
+	unordered_map<int, unordered_set<int>> graph_out(nodes);
+	unordered_map<int, unordered_set<int>> graph_in(nodes);
 	/// second pass to initialize graph with 1 where there is an edge
 	cout << "second pass reading file" << endl;
 	file.open(this->filename);
@@ -59,6 +69,8 @@ page_rank::page_rank(const string &filename) : filename(filename), nodes(0), edg
 		int start = 0, arrive = 0;
 		iss >> start >> arrive;
 		graph[arrive][start] = 1;
+		graph_out[start].insert(arrive);
+		graph_in[arrive].insert(start);
 		break;
 	}
 	while(getline(file, line)){
@@ -66,29 +78,48 @@ page_rank::page_rank(const string &filename) : filename(filename), nodes(0), edg
 		int start = 0, arrive = 0;
 		iss >> start >> arrive;
 		graph[arrive][start] = 1;
+		graph_out[start].insert(arrive);
+		graph_in[arrive].insert(start);
 	}
 	file.close();
 	/// compute out degree vector
 	cout << "computing out degree vector" << endl;
 	vector<int> oj = outDegree(graph);
+	vector<int> oj2 = outDegree(graph_out);
+	graph_out.clear(); // free memory
 	/// create CSR transition matrix
 	cout << "creating CSR transition matrix" << endl;
 	rows = {0};
 	for(auto i = 0; i < nodes; ++i){
 		for(auto j = 0; j < nodes; ++j){
-			if(graph[i][j] == 1){
-				auto val = 1.0/oj[j];
-				vals.push_back(val);
+			if(graph_in.contains(i) && graph_in[i].contains(j)){
+				vals.push_back(1.0/oj2[j]);
 				cols.push_back(j);
 			}
-			else if(oj[j] == 0){
-				auto val = 1.0/nodes;
-				vals.push_back(val);
+			else if(oj2[j] == 0){
+				vals.push_back(1.0/nodes);
 				cols.push_back(j);
 			}
 		}
 		rows.push_back(vals.size());
 	}
+	/*
+	for(auto i = 0; i < nodes; ++i){
+		for(auto j = 0; j < nodes; ++j){
+			if(graph[i][j] == 1){
+				vals.push_back(1.0/oj[j]);
+				cols.push_back(j);
+			}
+			else if(oj[j] == 0){
+				vals.push_back(1.0/nodes);
+				cols.push_back(j);
+			}
+		}
+		rows.push_back(vals.size());
+	}
+	*/
+	graph.clear(); // free memory
+	graph_in.clear(); // free memory
 	/// initialize rank vector
 	rank.resize(nodes, 1.0/nodes);
 }

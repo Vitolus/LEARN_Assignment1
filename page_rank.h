@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <vector>
+#include <unordered_map>
+#include <unordered_set>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -18,7 +20,8 @@ class page_rank{
 	vector<uint> rows, cols;
 	vector<float> vals;
 	vector<vector<float>> matrix;
-	[[nodiscard]] vector<int> outDegree(const vector<vector<short>> &) const;
+	[[nodiscard]] vector<int> outDegree(const vector<vector<short>>&) const;
+	[[nodiscard]] vector<int> outDegree(const unordered_map<int, unordered_set<int>>&) const;
 public:
     explicit page_rank(const string &);
 	[[nodiscard]] const vector<float> &getRank() const;

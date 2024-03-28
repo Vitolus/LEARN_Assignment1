@@ -1,19 +1,5 @@
 #include "page_rank.h"
 
-vector<int> page_rank::outDegree(const vector<vector<short>>& graph) const{
-	vector<int> oj(nodes, 0);
-	#pragma omp parallel for schedule(dynamic)
-	for (auto j = 0; j < nodes; ++j) {
-		int sum = 0;
-		#pragma omp parallel for reduction(+:sum)
-		for (auto i = 0; i < nodes; ++i){
-			sum += graph[i][j];
-		}
-		oj[j] = sum;
-	}
-	return oj;
-}
-
 vector<int> page_rank::outDegree(const unordered_map<int, unordered_set<int>>& graph_out) const{
 	vector<int> oj(nodes, 0);
 	for(auto i : graph_out){
@@ -50,8 +36,6 @@ page_rank::page_rank(const string &filename) : filename(filename), nodes(0), edg
 		++edges;
 	}
 	file.close();
-//TODO: consider unordered_map of vectors insted of vector of vectors to store only non zero values
-	vector<vector<short>> graph(nodes, vector<short>(nodes, 0));
 	unordered_map<int, unordered_set<int>> graph_out(nodes);
 	unordered_map<int, unordered_set<int>> graph_in(nodes);
 	/// second pass to initialize graph with 1 where there is an edge
@@ -68,7 +52,6 @@ page_rank::page_rank(const string &filename) : filename(filename), nodes(0), edg
 		istringstream iss(line);
 		int start = 0, arrive = 0;
 		iss >> start >> arrive;
-		graph[arrive][start] = 1;
 		graph_out[start].insert(arrive);
 		graph_in[arrive].insert(start);
 		break;
@@ -77,14 +60,12 @@ page_rank::page_rank(const string &filename) : filename(filename), nodes(0), edg
 		istringstream iss(line);
 		int start = 0, arrive = 0;
 		iss >> start >> arrive;
-		graph[arrive][start] = 1;
 		graph_out[start].insert(arrive);
 		graph_in[arrive].insert(start);
 	}
 	file.close();
 	/// compute out degree vector
 	cout << "computing out degree vector" << endl;
-	vector<int> oj = outDegree(graph);
 	vector<int> oj2 = outDegree(graph_out);
 	graph_out.clear(); // free memory
 	/// create CSR transition matrix
@@ -103,22 +84,6 @@ page_rank::page_rank(const string &filename) : filename(filename), nodes(0), edg
 		}
 		rows.push_back(vals.size());
 	}
-	/*
-	for(auto i = 0; i < nodes; ++i){
-		for(auto j = 0; j < nodes; ++j){
-			if(graph[i][j] == 1){
-				vals.push_back(1.0/oj[j]);
-				cols.push_back(j);
-			}
-			else if(oj[j] == 0){
-				vals.push_back(1.0/nodes);
-				cols.push_back(j);
-			}
-		}
-		rows.push_back(vals.size());
-	}
-	*/
-	graph.clear(); // free memory
 	graph_in.clear(); // free memory
 	/// initialize rank vector
 	rank.resize(nodes, 1.0/nodes);

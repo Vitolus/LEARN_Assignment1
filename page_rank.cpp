@@ -26,13 +26,6 @@ rows(new vector<ulong>()), cols(new vector<ulong>()), vals(new vector<float>()){
 		++edges;
 	}
 	file.close();
-	/// print some information for testing
-	cout << "number of nodes: " << nodes << endl;
-	cout << "number of edges: " << edges << endl;
-	cout << "dimension of adacency matrix in ram: " << static_cast<float>(sizeof(short)*nodes*nodes)/(1024*1024*1024) << " GB" << endl;
-	cout << "dimension of graph with only non zero values in ram: " << static_cast<float>(sizeof(int)*edges*2)/(1024*1024) << " MB" << endl;
-	cout << "sparisity rate: " << static_cast<float>(edges)/(nodes*(nodes-1)) << endl;
-
 	auto *graph_out = new unordered_map<ulong, unordered_set<ulong>>();
 	auto *graph_in = new unordered_map<ulong, unordered_set<ulong>>();
 	/// second pass to initialize graph with 1 where there is an edge
@@ -92,7 +85,7 @@ vector<float> *page_rank::compute_page_rank(int n_threads, int iter, float beta)
 		#pragma omp parallel for if(n_threads > 1) num_threads(n_threads) schedule(dynamic)
 		for(auto i = 0; i < nodes; ++i){
 			float sum = 0.0;
-			#pragma omp parallel for if(n_threads > 1) reduction(+:sum) // with some graph speedup inrease x3 times
+			#pragma omp parallel for if(n_threads > 1) reduction(+:sum)
 			for(auto j = (*rows)[i]; j < (*rows)[i+1]; ++j){
 				sum += (*vals)[j] * (*rank)[(*cols)[j]];
 			}

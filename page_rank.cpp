@@ -92,7 +92,7 @@ vector<float> *page_rank::compute_page_rank(int n_threads, int iter, float beta)
 		#pragma omp parallel for if(n_threads > 1) num_threads(n_threads) schedule(dynamic)
 		for(auto i = 0; i < nodes; ++i){
 			float sum = 0.0;
-			#pragma omp parallel for if(n_threads > 1) reduction(+:sum)
+			#pragma omp parallel for if(n_threads > 1) reduction(+:sum) // with some graph speedup inrease x3 times
 			for(auto j = (*rows)[i]; j < (*rows)[i+1]; ++j){
 				sum += (*vals)[j] * (*rank)[(*cols)[j]];
 			}

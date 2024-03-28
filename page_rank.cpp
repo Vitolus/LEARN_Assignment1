@@ -36,6 +36,10 @@ page_rank::page_rank(const string &filename) : filename(filename), nodes(0), edg
 		++edges;
 	}
 	file.close();
+	cout << "dimension of graph: " << nodes << endl;
+	cout << "dimension of graph in ram: " << static_cast<float>(sizeof(short)*nodes*nodes)/(1024*1024*1024) << " GB" << endl;
+	cout << "dimension of graph with only non zero values in ram: " << static_cast<float>(sizeof(short)*edges*2)/(1024*1024) << " MB" << endl;
+	cout << "sparisity rate: " << static_cast<float>(edges)/(nodes*(nodes-1)) << endl;
 	unordered_map<int, unordered_set<int>> graph_out(nodes);
 	unordered_map<int, unordered_set<int>> graph_in(nodes);
 	/// second pass to initialize graph with 1 where there is an edge

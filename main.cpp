@@ -27,11 +27,6 @@ int main(int argc, char *argv[]) { // filepath, n_threads
 	auto *pr = new page_rank(argv[1]);
 	auto nodes = pr->getNodes();
 	auto edges = pr->getEdges();
-	/*
-	cout << "dimension of adacency matrix in ram: " << static_cast<float>(sizeof(short)*nodes*nodes)/(1024*1024*1024) << " GB" << endl;
-	cout << "dimension of graph with only non zero values in ram: " << static_cast<float>(sizeof(int)*edges*2)/(1024*1024) << " MB" << endl;
-	cout << "sparisity rate: " << static_cast<float>(edges)/(nodes*(nodes-1)) << endl;
-	 */
 	vector<float> *rank;
 	for(auto i = 1; i <= stoi(argv[2]); ++i){
 		auto time = omp_get_wtime();
@@ -47,10 +42,9 @@ int main(int argc, char *argv[]) { // filepath, n_threads
 	csvfile = (pos != string::npos) ? csvfile.substr(0, pos) : csvfile;
 	csvfile += "-speedup.csv";
 	writeCSV(csvfile, times, speedups);
-	cout << "time to perform page rank:" << endl;
 	cout << "number of nodes: " << nodes << endl;
 	cout << "number of edges: " << edges << endl;
-	cout << "sparisity rate: " << static_cast<float>(edges)/(nodes*(nodes-1)) << endl;
+	cout << "sparsity rate: " << static_cast<float>(edges)/(nodes*(nodes-1)) << endl;
 	for(auto i = 1; i <= stoi(argv[2]); ++i){
 		cout << "n_threads= " << i << " time= " << times[i-1] << " speedup= " << speedups[i-1] << endl;
 	}

@@ -2,7 +2,7 @@
 
 vector<ulong> *page_rank::outDegree(const unordered_map<ulong, unordered_set<ulong>> *graph_out) const{
 	auto *oj = new vector<ulong>(nodes, 0);
-	for(const auto& i : *graph_out){
+	for(const auto& i : *graph_out){ // i.first is the node, i.second is the set of nodes reachable from i.first
 		(*oj)[i.first] = i.second.size();
 	}
 	return oj;
@@ -39,8 +39,8 @@ rows(new vector<ulong>()), cols(new vector<ulong>()), vals(new vector<float>()){
 		istringstream iss(line);
 		long start = 0, arrive = 0;
 		iss >> start >> arrive;
-		(*graph_out)[start].insert(arrive);
-		(*graph_in)[arrive].insert(start);
+		(*graph_out)[start].insert(arrive); // start -> arrive
+		(*graph_in)[arrive].insert(start); // arrive -> start
 	}
 	file.close();
 	/// compute out degree vector
@@ -51,10 +51,10 @@ rows(new vector<ulong>()), cols(new vector<ulong>()), vals(new vector<float>()){
 	/// create CSR transition matrix
 	cout << "creating CSR transition matrix" << endl;
 	rows->push_back(0);
-	for(auto i = 0; i < nodes; ++i){
-		auto it_i = graph_in->find(i);
-		for(auto j = 0; j < nodes; ++j){
-			if(it_i != graph_in->end() && it_i->second.contains(j)){
+	for(auto i = 0; i < nodes; ++i){ // i is the row
+		auto it_i = graph_in->find(i); // check if i is in the graph
+		for(auto j = 0; j < nodes; ++j){ // j is the column
+			if(it_i != graph_in->end() && it_i->second.contains(j)){ // check if there is an edge i -> j
 				vals->push_back(1.0/((*oj)[j]));
 				cols->push_back(j);
 			}
@@ -83,13 +83,13 @@ vector<float> *page_rank::compute_page_rank(int n_threads, int iter, float beta)
 	for(auto k = 0; k < iter; ++k){
 		fill(results->begin(), results->end(), 0.0); // Reset values to 0
 		#pragma omp parallel for if(n_threads > 1) num_threads(n_threads) schedule(dynamic)
-		for(auto i = 0; i < nodes; ++i){
+		for(auto i = 0; i < nodes; ++i){ // i is the row
 			float sum = 0.0;
 			#pragma omp parallel for if(n_threads > 1) reduction(+:sum)
-			for(auto j = (*rows)[i]; j < (*rows)[i+1]; ++j){
-				sum += (*vals)[j] * (*rank)[(*cols)[j]];
+			for(auto j = (*rows)[i]; j < (*rows)[i+1]; ++j){ // j is the column
+				sum += (*vals)[j] * (*rank)[(*cols)[j]]; // sum += A[i][j] * x[j]
 			}
-			(*results)[i] = beta * sum + c;
+			(*results)[i] = beta * sum + c; // y[i] = beta * sum + c
 		}
 		swap(*rank, *results);
 	}

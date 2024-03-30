@@ -56,4 +56,4 @@ a local machine with a Ryzen 5 5600x and 32GB of RAM.
 | Wiki-Vote           | 8298    | 103689   | 0.00150605    |                 |
 | yahoo-msg           | 100001  | 6359436  | 0.000635937   |                 |
 
-
+![Speedups](/performance/speedups.png)![Times](/performance/times.png)

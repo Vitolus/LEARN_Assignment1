@@ -44,14 +44,16 @@ algorithm is evaluated by measuring the speedup of the parallel version with res
 execution time is measured with the `omp_get_wtime()` function. The cache miss rate is measured with the `perf` tool on
 a local machine with a Ryzen 5 5600x and 32GB of RAM.
 
-| Name                | # nodes | # edges  | Sparsity rate |
-|---------------------|---------|----------|---------------|
-| bio-human-gene2     | 14341   | 9041364  | 0.0439648     |
-| ca-citeseer         | 227321  | 814134   | 0.000015755   |
-| co-papers-citeseer  | 434103  | 16036720 | 0.0000851003  |
-| ER-AvgDeg10-100k-L2 | 100001  | 499359   | 0.0000499354  |
-| MANN-a81            | 3322    | 5506380  | 0.499112      |
-| p2p-Gnutella25      | 22687   | 54705    | 0.00010629    |
-| rec-movielens       | 71568   | 10000054 | 0.00195241    |
-| Wiki-Vote           | 8298    | 103689   | 0.00150605    |
-| yahoo-msg           | 100001  | 6359436  | 0.000635937   |
+| Name                | # nodes | # edges  | Sparsity rate | Cache miss rate |
+|---------------------|---------|----------|---------------|-----------------|
+| bio-human-gene2     | 14341   | 9041364  | 0.0439648     |                 |
+| ca-citeseer         | 227321  | 814134   | 0.000015755   |                 |
+| co-papers-citeseer  | 434103  | 16036720 | 0.0000851003  |                 |
+| ER-AvgDeg10-100K-L2 | 100001  | 499359   | 0.0000499354  |                 |
+| MANN-a81            | 3322    | 5506380  | 0.499112      |                 |
+| p2p-Gnutella25      | 22687   | 54705    | 0.00010629    |                 |
+| rec-movielens       | 71568   | 10000054 | 0.00195241    |                 |
+| Wiki-Vote           | 8298    | 103689   | 0.00150605    |                 |
+| yahoo-msg           | 100001  | 6359436  | 0.000635937   |                 |
+
+

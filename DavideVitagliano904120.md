@@ -47,13 +47,13 @@ a local machine with a Ryzen 5 5600x and 32GB of RAM.
 | Name                | # nodes | # edges  | Sparsity rate | Cache miss rate |
 |---------------------|---------|----------|---------------|-----------------|
 | bio-human-gene2     | 14341   | 9041364  | 0.0439648     | 8.55%           |
-| ca-citeseer         | 227321  | 814134   | 0.000015755   |                 |
-| co-papers-citeseer  | 434103  | 16036720 | 0.0000851003  |                 |
-| ER-AvgDeg10-100K-L2 | 100001  | 499359   | 0.0000499354  |                 |
+| ca-citeseer         | 227321  | 814134   | 0.000015755   | process killed  |
+| co-papers-citeseer  | 434103  | 16036720 | 0.0000851003  | process killed  |
+| ER-AvgDeg10-100K-L2 | 100001  | 499359   | 0.0000499354  | 13.92%          |
 | MANN-a81            | 3322    | 5506380  | 0.499112      | 4.87%           |
 | p2p-Gnutella25      | 22687   | 54705    | 0.00010629    | 9.15%           |
 | rec-movielens       | 71568   | 10000054 | 0.00195241    | 34.40%          |
 | Wiki-Vote           | 8298    | 103689   | 0.00150605    | 14.10%          |
-| yahoo-msg           | 100001  | 6359436  | 0.000635937   |                 |
+| yahoo-msg           | 100001  | 6359436  | 0.000635937   | 29.53%          |
 
 ![Speedups](/performance/speedups.png)![Times](/performance/times.png)

@@ -44,16 +44,24 @@ algorithm is evaluated by measuring the speedup of the parallel version with res
 execution time is measured with the `omp_get_wtime()` function. The cache miss rate is measured with the `perf` tool on
 a local machine with a Ryzen 5 5600x and 32GB of RAM.
 
-| Name                | # nodes | # edges  | Sparsity rate | Cache miss rate |
-|---------------------|---------|----------|---------------|-----------------|
-| bio-human-gene2     | 14341   | 9041364  | 0.0439648     | 8.55%           |
-| ca-citeseer         | 227321  | 814134   | 0.000015755   | process killed  |
-| co-papers-citeseer  | 434103  | 16036720 | 0.0000851003  | process killed  |
-| ER-AvgDeg10-100K-L2 | 100001  | 499359   | 0.0000499354  | 13.92%          |
-| MANN-a81            | 3322    | 5506380  | 0.499112      | 4.87%           |
-| p2p-Gnutella25      | 22687   | 54705    | 0.00010629    | 9.15%           |
-| rec-movielens       | 71568   | 10000054 | 0.00195241    | 34.40%          |
-| Wiki-Vote           | 8298    | 103689   | 0.00150605    | 14.10%          |
-| yahoo-msg           | 100001  | 6359436  | 0.000635937   | 29.53%          |
+| Name                | # nodes | # edges  | Density rate | Cache miss rate |
+|---------------------|---------|----------|--------------|-----------------|
+| bio-human-gene2     | 14341   | 9041364  | 0.0439648    | 8.55%           |
+| ca-citeseer         | 227321  | 814134   | 0.000015755  | process killed  |
+| co-papers-citeseer  | 434103  | 16036720 | 0.0000851003 | process killed  |
+| ER-AvgDeg10-100K-L2 | 100001  | 499359   | 0.0000499354 | 13.92%          |
+| MANN-a81            | 3322    | 5506380  | 0.499112     | 4.87%           |
+| p2p-Gnutella25      | 22687   | 54705    | 0.00010629   | 9.15%           |
+| rec-movielens       | 71568   | 10000054 | 0.00195241   | 34.40%          |
+| Wiki-Vote           | 8298    | 103689   | 0.00150605   | 14.10%          |
+| yahoo-msg           | 100001  | 6359436  | 0.000635937  | 29.53%          |
 
 ![Speedups](/performance/speedups.png)![Times](/performance/times.png)
+
+From the chart, we notice that lower the density, lower the speedup in spite of the dimension of the graph.
+Almost all the graphs has a sublinear speedup as expected, except the **bio-human-gene2** graph that has a superlinear 
+speedup. One interesting observation is that it has a better speedup than the **MANN-a81** graph, despite having a
+lower density. This may be due to the distribution of the edges that allows a better load balancing.
+Lastly, the cache miss rate is quite high for all the graphs, which is due to the random access pattern of the CSR
+matrix that does not exploit the cache locality. As a matter of fact, the **MANN-a81** graph has the lowest cache miss
+rate because of its high density.

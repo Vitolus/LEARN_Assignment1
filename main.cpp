@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) { // filepath, n_threads
 	auto edges = pr->getEdges();
 	vector<float> *rank;
 	for(auto i = 1; i <= stoi(argv[2]); ++i){
+		cout << "computing page rank" << endl;
 		auto time = omp_get_wtime();
 		rank = pr->compute_page_rank(i, 50, 0.85);
 		times[i-1] = omp_get_wtime() - time;

@@ -69,7 +69,6 @@ rows(new vector<ulong>()), cols(new vector<ulong>()), vals(new vector<float>()){
 }
 
 vector<float> *page_rank::compute_page_rank(int n_threads, int iter, float beta){
-	cout << "computing page rank" << endl;
 	auto c = (1.0 - beta) / nodes;
 	auto *results = new vector<float>(nodes, 0.0);
 	for(auto k = 0; k < iter; ++k){

@@ -68,14 +68,6 @@ rows(new vector<ulong>()), cols(new vector<ulong>()), vals(new vector<float>()){
 	rank = new vector<float>(nodes, 1.0/nodes);
 }
 
-long page_rank::getNodes() const{
-	return nodes;
-}
-
-long page_rank::getEdges() const{
-	return edges;
-}
-
 vector<float> *page_rank::compute_page_rank(int n_threads, int iter, float beta){
 	cout << "computing page rank" << endl;
 	auto c = (1.0 - beta) / nodes;
@@ -94,4 +86,12 @@ vector<float> *page_rank::compute_page_rank(int n_threads, int iter, float beta)
 		swap(*rank, *results);
 	}
 	return rank;
+}
+
+long page_rank::getNodes() const{
+	return nodes;
+}
+
+long page_rank::getEdges() const{
+	return edges;
 }

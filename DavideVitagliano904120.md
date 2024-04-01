@@ -59,12 +59,12 @@ a local machine with a Ryzen 5 5600x (6 cores and 12 threads) and 32GB of RAM.
 ![Speedups](/performance/speedups.png)![Times](/performance/times.png)
 
 From the chart, we notice that lower the density, lower the speedup in spite of the dimension of the graph.
-Almost all the graphs has a sublinear speedup as expected, except the **bio-human-gene2** graph that has a superlinear 
+Almost all the graphs has a sublinear speedup as expected, except the **bio-human-gene2** graph that has a superlinear
 speedup. One interesting observation is that it has a better speedup than the **MANN-a81** graph, despite having a
 lower density. This may be due to the distribution of the edges that allows a better load balancing.
 Moreover, the cache miss rate is quite high for all the graphs, which is due to the random access pattern of the CSR
 matrix that does not exploit the cache locality. As a matter of fact, the **MANN-a81** graph has the lowest cache miss
 rate because of its high density.
 Lastly, the speedups on the local machine have relatively lower performance than the cluster, having the speedup range
-from 2 to 10 at a parity of graphs. This may be due to the different architectures and the number of cores, specifically
-the cluster uses one thread per core while the local machine uses two threads per core.
+from 2 to 10 at a parity of graphs. This may be due to the different architectures and the number of cores;
+specifically, the cluster uses one thread per core while the local machine uses two threads per core.

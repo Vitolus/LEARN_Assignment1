@@ -33,8 +33,9 @@ function compute_page_rank(n_threads, iter, beta):
 
 The `parallel for` uses a dynamic scheduling to improve scalability and load balancing, which should offset the overhead
 due to the synchronization. The number of threads is managed by the parameter `n_threads`, which means that with one
-thread it runs the sequential version of the algorithm. The time complexity of the algorithm is **O(iter\*n\*m)** and
-the space complexity is **O(n+m)**, where n is the number of nodes and m is the number of edges.
+thread it runs the sequential version of the algorithm. The second `parallel for` performs a reduction on the sum. The
+time complexity of the algorithm is **O(iter\*n\*m)** and the space complexity is **O(n+m)**, where n is the number of
+nodes and m is the number of edges.
 
 ### 2. Testing
 

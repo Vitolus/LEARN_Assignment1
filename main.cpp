@@ -28,6 +28,9 @@ int main(int argc, char *argv[]) { // filepath, n_threads
 	auto nodes = pr->getNodes();
 	auto edges = pr->getEdges();
 	vector<float> *rank;
+	cout << "number of nodes: " << nodes << endl;
+	cout << "number of edges: " << edges << endl;
+	cout << "sparsity rate: " << static_cast<float>(edges)/(nodes*(nodes-1)) << endl;
 	for(auto i = 1; i <= stoi(argv[2]); ++i){
 		cout << "computing page rank" << endl;
 		auto time = omp_get_wtime();
@@ -35,7 +38,7 @@ int main(int argc, char *argv[]) { // filepath, n_threads
 		times[i-1] = omp_get_wtime() - time;
 		speedups[i-1] = times[0] / times[i-1];
 	}
-	for(auto i = 0; i < 5; ++i){
+	for(auto i = 0; i < 5; ++i){ // print first 5 elements of the rank vector
 		cout << "rank[" << i << "]= " << (*rank)[i] << endl;
 	}
 	string csvfile = argv[1];
@@ -43,11 +46,5 @@ int main(int argc, char *argv[]) { // filepath, n_threads
 	csvfile = (pos != string::npos) ? csvfile.substr(0, pos) : csvfile;
 	csvfile += "-speedup.csv";
 	writeCSV(csvfile, times, speedups);
-	cout << "number of nodes: " << nodes << endl;
-	cout << "number of edges: " << edges << endl;
-	cout << "sparsity rate: " << static_cast<float>(edges)/(nodes*(nodes-1)) << endl;
-	for(auto i = 1; i <= stoi(argv[2]); ++i){
-		cout << "n_threads= " << i << " time= " << times[i-1] << " speedup= " << speedups[i-1] << endl;
-	}
 	return 0;
 }

@@ -4,8 +4,8 @@ To solve the task of performing page rank, we build a class called `page_rank`. 
 directed graph and the constructor read a file containing the edges of the graph. In the first pass it determines the
 number of nodes and edges, while in the second pass it populates two `unordered_map<ulong, unordered_set<ulong>>`
 representing the adjacency matrix but storing only non-zero values: *graph_out* row wise and *graph_in* column wise.
-Then the constructor builds the *oj* `vector<ulong>` containing the out degree of each node, computed with the row wise
-map. Lastly, it initializes the *rank* `vector<float>` with equal rank to each node and build the transition matrix
+Then the constructor builds the *oj* `vector<ulong>` containing the out degree of each node, computed with *graph_out*.
+Lastly, it initializes the *rank* `vector<float>` with equal rank to each node and build the transition matrix
 represented as a Compressed Sparse Row (CSR) matrix, computed with *graph_in*, as follows:
 
 - For each node, it iterates over its incoming edges.
